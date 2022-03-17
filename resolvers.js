@@ -30,9 +30,8 @@ const resolvers = {
     },
 
     deleteUser: (_, { id }) => {
-      let ID = parseInt(id);
-      users = users.filter((user) => user.id !== ID);
-      return id;
+      remove(users, (user) => user.id === Number(id));
+      return null;
     },
   },
 };
