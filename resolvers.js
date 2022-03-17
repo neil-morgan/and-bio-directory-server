@@ -23,8 +23,14 @@ const resolvers = {
   Mutation: {
     createUser: (_, { input }) => {
       const user = input;
-      const lastId = users[users.length - 1].id;
-      user.id = lastId + 1;
+
+      if (users.length === 0) {
+        user.id = 1;
+        users.push(user);
+        return user;
+      }
+
+      user.id = users[users.length - 1].id + 1;
       users.push(user);
       return user;
     },
