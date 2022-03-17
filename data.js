@@ -19,6 +19,10 @@ const users = [
     id: 5,
     name: "Adam",
   },
+  {
+    id: 6,
+    name: "Foo",
+  },
 ];
 
 module.exports = { users };
