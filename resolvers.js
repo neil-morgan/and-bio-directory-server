@@ -35,6 +35,19 @@ const resolvers = {
       return user;
     },
 
+    updateUser: (_, args) => {
+      const { id, newUser } = args.input;
+      let updatedUser;
+      users.forEach((user) => {
+        if (user.id === Number(id)) {
+          user.name = newUser.name;
+          user.jobTitle = newUser.jobTitle;
+          updatedUser = user;
+        }
+      });
+      return updatedUser;
+    },
+
     deleteUser: (_, { id }) => {
       remove(users, (user) => user.id === Number(id));
       return null;
