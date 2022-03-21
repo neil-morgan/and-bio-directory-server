@@ -8,6 +8,7 @@ const typeDefs = gql`
   type User {
     id: ID!
     name: String!
+    job_title: String!
   }
 
   type Query {
