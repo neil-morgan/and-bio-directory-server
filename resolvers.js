@@ -36,12 +36,18 @@ const resolvers = {
     },
 
     updateUser: (_, args) => {
-      const { id, newUser } = args.input;
+      const { id, name, jobTitle } = args.input;
       let updatedUser;
       users.forEach((user) => {
         if (user.id === Number(id)) {
-          user.name = newUser.name;
-          user.jobTitle = newUser.jobTitle;
+          if (name !== "") {
+            user.name = name;
+          }
+
+          if (jobTitle !== "") {
+            user.jobTitle = jobTitle;
+          }
+
           updatedUser = user;
         }
       });
