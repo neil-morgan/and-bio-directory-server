@@ -48,6 +48,7 @@ const resolvers = {
               user[key] = input[key];
             }
           }
+
           updatedUser = user;
         }
       });
