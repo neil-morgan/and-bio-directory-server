@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 const find = require("lodash/find");
 const remove = require("lodash/remove");
 
@@ -17,7 +18,7 @@ const resolvers = {
     userByName: (_, args) => {
       const { name } = args;
       return find(users, { name });
-    },
+    }
   },
 
   Mutation: {
@@ -36,18 +37,17 @@ const resolvers = {
     },
 
     updateUser: (_, args) => {
-      const { id, name, jobTitle } = args.input;
+      const { input } = args;
+      const keys = new Set(["name", "jobTitle"]);
+
       let updatedUser;
-      users.forEach((user) => {
-        if (user.id === Number(id)) {
-          if (name !== "") {
-            user.name = name;
+      users.forEach(user => {
+        if (user.id === Number(input.id)) {
+          for (const key in user) {
+            if (keys.has(key)) {
+              user[key] = input[key];
+            }
           }
-
-          if (jobTitle !== "") {
-            user.jobTitle = jobTitle;
-          }
-
           updatedUser = user;
         }
       });
@@ -55,10 +55,10 @@ const resolvers = {
     },
 
     deleteUser: (_, { id }) => {
-      remove(users, (user) => user.id === Number(id));
+      remove(users, user => user.id === Number(id));
       return null;
-    },
-  },
+    }
+  }
 };
 
 module.exports = { resolvers };
