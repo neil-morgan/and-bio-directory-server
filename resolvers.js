@@ -1,13 +1,27 @@
 /* eslint-disable no-console */
+const { initializeApp, cert } = require('firebase-admin/app');
+const { getFirestore } = require('firebase-admin/firestore');
+const serviceAccount = require("./firebase-setup.json");
 const find = require("lodash/find");
 const remove = require("lodash/remove");
+
+initializeApp({
+  credential: cert(serviceAccount)
+});
+
+const db = getFirestore();
 
 const { users } = require("./data");
 
 const resolvers = {
   Query: {
-    users: () => {
-      return users;
+    users: async () => {
+      let users = []
+      const snapshot = await db.collection('users').get();
+      snapshot.forEach((doc) => {
+        users.push({ id: doc.id, ...doc.data() });
+      });
+      return users
     },
 
     user: (_, args) => {
