@@ -38,7 +38,7 @@ const resolvers = {
 
     updateUser: (_, args) => {
       const { input } = args;
-      const keys = new Set(["name", "jobTitle"]);
+      const keys = new Set(["name", "role"]);
 
       let updatedUser;
       users.forEach(user => {
