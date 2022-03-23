@@ -1,9 +1,11 @@
 /* eslint-disable no-console */
-const { initializeApp, cert } = require('firebase-admin/app');
-const { getFirestore } = require('firebase-admin/firestore');
-const serviceAccount = require("./firebase-setup.json");
+const { initializeApp, cert } = require("firebase-admin/app");
+const { getFirestore } = require("firebase-admin/firestore");
 const find = require("lodash/find");
 const remove = require("lodash/remove");
+
+const { users } = require("./data");
+const serviceAccount = require("./firebase-setup.json");
 
 initializeApp({
   credential: cert(serviceAccount)
@@ -11,17 +13,15 @@ initializeApp({
 
 const db = getFirestore();
 
-const { users } = require("./data");
-
 const resolvers = {
   Query: {
     users: async () => {
-      let users = []
-      const snapshot = await db.collection('users').get();
-      snapshot.forEach((doc) => {
+      const users = [];
+      const snapshot = await db.collection("users").get();
+      snapshot.forEach(doc => {
         users.push({ id: doc.id, ...doc.data() });
       });
-      return users
+      return users;
     },
 
     user: (_, args) => {
@@ -52,7 +52,7 @@ const resolvers = {
 
     updateUser: (_, args) => {
       const { input } = args;
-      const keys = new Set(["name", "jobTitle"]);
+      const keys = new Set(["name", "role"]);
 
       let updatedUser;
       users.forEach(user => {

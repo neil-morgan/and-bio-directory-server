@@ -8,31 +8,31 @@ const users = [
   {
     id: 1,
     name: "Nick",
-    jobTitle: "Note taker",
+    role: "Note taker",
     roles
   },
   {
     id: 2,
     name: "Neil Morgan",
-    jobTitle: "Toilet cleaner",
+    role: "Toilet cleaner",
     roles
   },
   {
     id: 3,
     name: "Diana",
-    jobTitle: "Coffee maker",
+    role: "Coffee maker",
     roles
   },
   {
     id: 4,
     name: "Alex",
-    jobTitle: "Dish washer",
+    role: "Dish washer",
     roles
   },
   {
     id: 5,
     name: "Adam",
-    jobTitle: "Errand runner",
+    role: "Errand runner",
     roles
   }
 ];

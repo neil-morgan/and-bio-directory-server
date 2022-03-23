@@ -5,19 +5,19 @@ const { gql } = require("apollo-server");
 const typeDefs = gql`
   input CreateUserData {
     name: String!
-    jobTitle: String!
+    role: String!
   }
 
   input UpdateUserInput {
     id: ID!
     name: String!
-    jobTitle: String!
+    role: String!
   }
 
   type User {
     id: ID!
     name: String!
-    jobTitle: String!
+    role: String!
   }
 
   type Query {
