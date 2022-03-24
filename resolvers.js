@@ -26,7 +26,6 @@ const resolvers = {
 
     user: async (_, { id }) => {
       const user = await db.collection("users").doc(id).get();
-      console.log({ id, ...user.data() });
       return { id, ...user.data() };
     },
 
