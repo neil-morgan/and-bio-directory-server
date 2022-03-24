@@ -1,63 +1,64 @@
-/* eslint-disable no-console */
+const { initializeApp, cert } = require("firebase-admin/app");
+const { getFirestore } = require("firebase-admin/firestore");
 const find = require("lodash/find");
-const remove = require("lodash/remove");
 
-const { users } = require("./data");
+const serviceAccount = require("./firebase-setup.json");
+
+initializeApp({
+  credential: cert(serviceAccount)
+});
+
+const db = getFirestore();
+const usersCol = db.collection("users"); // Col for collection
+
+const snapshotToArray = snapshot => {
+  const array = [];
+  snapshot.forEach(doc => {
+    array.push({ id: doc.id, ...doc.data() });
+  });
+  return array;
+};
 
 const resolvers = {
   Query: {
-    users: () => {
-      return users;
+    users: async () => {
+      const snapshot = await usersCol.get();
+      return snapshotToArray(snapshot);
     },
 
-    user: (_, args) => {
-      const { id } = args;
-      return find(users, { id: Number(id) });
+    user: async (_, { id }) => {
+      const user = await usersCol.doc(id).get();
+      return { id, ...user.data() };
     },
 
-    userByName: (_, args) => {
+    userByName: async (_, args) => {
       const { name } = args;
-      return find(users, { name });
+      const snapshot = await usersCol.get();
+      return find(snapshotToArray(snapshot), { name });
     }
   },
 
   Mutation: {
-    createUser: (_, { input }) => {
-      const user = input;
-
-      if (users.length === 0) {
-        user.id = 1;
-        users.push(user);
-        return user;
-      }
-
-      user.id = users[users.length - 1].id + 1;
-      users.push(user);
-      return user;
+    createUser: async (_, { input }) => {
+      const res = await usersCol.add({ ...input });
+      return { id: res.id, ...input };
     },
 
-    updateUser: (_, args) => {
+    updateUser: async (_, args) => {
       const { input } = args;
-      const keys = new Set(["name", "role"]);
+      const user = usersCol.doc(input.id);
+      const res = await user.set({ ...input }, { merge: true });
 
-      let updatedUser;
-      users.forEach(user => {
-        if (user.id === Number(input.id)) {
-          for (const key in user) {
-            if (keys.has(key)) {
-              user[key] = input[key];
-            }
-          }
-
-          updatedUser = user;
-        }
-      });
-      return updatedUser;
+      if (res) {
+        return input;
+      }
     },
 
-    deleteUser: (_, { id }) => {
-      remove(users, user => user.id === Number(id));
-      return null;
+    deleteUser: async (_, { id }) => {
+      const res = await usersCol.doc(id).delete();
+      if (res) {
+        return null;
+      }
     }
   }
 };
