@@ -24,9 +24,10 @@ const resolvers = {
       return users;
     },
 
-    user: (_, args) => {
-      const { id } = args;
-      return find(users, { id: Number(id) });
+    user: async (_, { id }) => {
+      const user = await db.collection("users").doc(id).get();
+      console.log({ id, ...user.data() });
+      return { id, ...user.data() };
     },
 
     userByName: (_, args) => {
