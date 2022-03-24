@@ -1,10 +1,6 @@
-/* eslint-disable no-console */
 const { initializeApp, cert } = require("firebase-admin/app");
 const { getFirestore } = require("firebase-admin/firestore");
 const find = require("lodash/find");
-const remove = require("lodash/remove");
-
-const { users } = require("./data");
 const serviceAccount = require("./firebase-setup.json");
 
 initializeApp({
@@ -12,66 +8,57 @@ initializeApp({
 });
 
 const db = getFirestore();
+const usersCol = db.collection('users') // Col for collection
+
+const snapshotToArray = (snapshot) => {
+  let array = [];
+  snapshot.forEach(doc => {
+    array.push({ id: doc.id, ...doc.data() });
+  });
+  return array;
+}
 
 const resolvers = {
   Query: {
     users: async () => {
-      const users = [];
-      const snapshot = await db.collection("users").get();
-      snapshot.forEach(doc => {
-        users.push({ id: doc.id, ...doc.data() });
-      });
-      return users;
+      const snapshot = await usersCol.get();
+      return snapshotToArray(snapshot)
     },
 
     user: async (_, { id }) => {
-      const user = await db.collection("users").doc(id).get();
-      console.log({ id, ...user.data() });
+      const user = await usersCol.doc(id).get();
       return { id, ...user.data() };
     },
 
-    userByName: (_, args) => {
+    userByName: async (_, args) => {
       const { name } = args;
-      return find(users, { name });
+      const snapshot = await usersCol.get();
+      return find(snapshotToArray(snapshot), { name })
     }
   },
 
   Mutation: {
-    createUser: (_, { input }) => {
-      const user = input;
-
-      if (users.length === 0) {
-        user.id = 1;
-        users.push(user);
-        return user;
-      }
-
-      user.id = users[users.length - 1].id + 1;
-      users.push(user);
+    createUser: async (_, { input }) => {
+      const res = await usersCol.add({ ...input });
+      let user = { id: res.id, ...input }
       return user;
     },
 
-    updateUser: (_, args) => {
+    updateUser: async (_, args) => {
       const { input } = args;
-      const keys = new Set(["name", "role"]);
+      let newUserData = input
+      const user = usersCol.doc(input.id);
+      delete newUserData.id
+      const res = await user.set({
+        ...newUserData
+      }, { merge: true });
 
-      let updatedUser;
-      users.forEach(user => {
-        if (user.id === Number(input.id)) {
-          for (const key in user) {
-            if (keys.has(key)) {
-              user[key] = input[key];
-            }
-          }
-          updatedUser = user;
-        }
-      });
-      return updatedUser;
+      if (res) return newUserData
     },
 
-    deleteUser: (_, { id }) => {
-      remove(users, user => user.id === Number(id));
-      return null;
+    deleteUser: async (_, { id }) => {
+      const res = await usersCol.doc(id).delete();
+      if (res) return null
     }
   }
 };
