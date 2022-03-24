@@ -3,12 +3,12 @@ const { gql } = require("apollo-server");
 // ? NOTE: ! exclamation point signifies whether a return is required or not
 
 const typeDefs = gql`
-  input CreateUserData {
+  input createUserData {
     name: String!
     role: String!
   }
 
-  input UpdateUserInput {
+  input updateUserData {
     id: ID!
     name: String!
     role: String!
@@ -27,8 +27,8 @@ const typeDefs = gql`
   }
 
   type Mutation {
-    createUser(input: CreateUserData!): User
-    updateUser(input: UpdateUserInput!): User
+    createUser(input: createUserData!): User
+    updateUser(input: updateUserData!): User
     deleteUser(id: ID!): User
   }
 `;
