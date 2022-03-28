@@ -31,8 +31,7 @@ const resolvers = {
       return { id, ...user.data() };
     },
 
-    userByName: async (_, args) => {
-      const { name } = args;
+    userByName: async (_, { name }) => {
       const snapshot = await usersCol.get();
       return find(snapshotToArray(snapshot), { name });
     }
@@ -44,11 +43,9 @@ const resolvers = {
       return { id: res.id, ...input };
     },
 
-    updateUser: async (_, args) => {
-      const { input } = args;
+    updateUser: async (_, { input }) => {
       const user = usersCol.doc(input.id);
       const res = await user.set({ ...input }, { merge: true });
-
       if (res) {
         return input;
       }
