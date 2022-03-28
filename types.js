@@ -21,6 +21,8 @@ const typeDefs = gql`
     name: String!
     surname: String!
     role: String!
+    traits: [String]!
+    skills: [String]!
   }
 
   type Query {
