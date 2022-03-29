@@ -43,8 +43,10 @@ const resolvers = {
       return { id: res.id, ...input };
     },
 
+
     updateUser: async (_, { input }) => {
       const user = usersCol.doc(input.id);
+      delete input.id
       const res = await user.set({ ...input }, { merge: true });
       if (res) {
         return input;
@@ -52,9 +54,10 @@ const resolvers = {
     },
 
     deleteUser: async (_, { id }) => {
+      const user = usersCol.doc(id);
       const res = await usersCol.doc(id).delete();
       if (res) {
-        return null;
+        return user;
       }
     }
   }
