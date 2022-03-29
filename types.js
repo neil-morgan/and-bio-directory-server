@@ -6,14 +6,20 @@ const typeDefs = gql`
   input createUserData {
     name: String!
     role: String!
+    seniority: String!
     surname: String!
+    skills: [String]!
+    traits: [String]!
   }
 
   input updateUserData {
     id: ID!
     name: String!
     role: String!
+    seniority: String!
     surname: String!
+    skills: [String]!
+    traits: [String]!
   }
 
   type User {
